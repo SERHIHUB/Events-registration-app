@@ -3,9 +3,12 @@ import {
   fetchEvents,
   getOneEvent,
 } from '../../services/events/events.js';
+import { parsePaginationParams } from '../../utils/parsePagination.js';
 
 export const getEventsController = async (req, res, next) => {
-  const events = await fetchEvents();
+  const { page, perPage } = parsePaginationParams(req.query);
+
+  const events = await fetchEvents({ page, perPage });
 
   res.status(200).json({
     status: 200,

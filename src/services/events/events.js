@@ -1,9 +1,38 @@
 import { Event } from '../../db/models/events.js';
 
-export const fetchEvents = async () => {
-  const allEvents = await Event.find();
+const createPaginationInformation = (page, perPage, count) => {
+  const totalPages = Math.ceil(count / perPage);
+  const hasPreviousPage = page > 1;
+  const hasNextPage = page < totalPages;
 
-  return allEvents;
+  return {
+    page,
+    perPage,
+    totalItems: count,
+    totalPages,
+    hasPreviousPage,
+    hasNextPage,
+  };
+};
+
+export const fetchEvents = async ({ page = 1, perPage = 12 }) => {
+  const skip = perPage * (page - 1);
+
+  const [eventsCount, allEvents] = await Promise.all([
+    Event.find().countDocuments(),
+    Event.find().skip(skip).limit(perPage),
+  ]);
+
+  const paginationInformation = createPaginationInformation(
+    page,
+    perPage,
+    eventsCount,
+  );
+
+  return {
+    allEvents,
+    ...paginationInformation,
+  };
 };
 
 export const getOneEvent = async (id) => {
