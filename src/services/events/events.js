@@ -31,7 +31,7 @@ export const fetchEvents = async ({ page = 1, perPage = 12 }) => {
 
   return {
     allEvents,
-    ...paginationInformation,
+    paginationInformation,
   };
 };
 
